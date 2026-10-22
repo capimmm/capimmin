@@ -11,7 +11,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 
 <style>
-  /* ============ TOKENS (TEMA CLARO) ============ */
   :root {
     --bg: #fafafa;
     --card-bg: #ffffff;
@@ -43,7 +42,6 @@
     flex-direction: column;
   }
 
-  /* ============ PADRÃO DE GRADE (FUNDO) ============ */
   .bg-grid {
     position: fixed;
     inset: 0;
@@ -57,7 +55,6 @@
     -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
   }
 
-  /* ============ WHATSAPP CTA ============ */
   .wa-cta {
     position: fixed;
     bottom: 24px;
@@ -85,7 +82,6 @@
   }
   .wa-cta svg { width: 16px; height: 16px; color: var(--wa); }
 
-  /* ============ LAYOUT ============ */
   .wrap {
     flex: 1;
     display: grid;
@@ -93,11 +89,11 @@
     padding: 40px 20px;
     position: relative;
     z-index: 5;
+    perspective: 1000px;
   }
 
   .container { width: 100%; max-width: 540px; }
 
-  /* ============ HEADER ============ */
   .header {
     text-align: center;
     margin-bottom: 32px;
@@ -116,7 +112,6 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    /* Força a logo a ficar preta se for branca */
     filter: invert(1) brightness(0); 
   }
 
@@ -137,7 +132,6 @@
     margin: 0 auto;
   }
 
-  /* ============ CARD ============ */
   .card {
     position: relative;
     padding: 32px;
@@ -147,12 +141,15 @@
     box-shadow: 
       0 1px 3px rgba(0,0,0,0.02),
       0 20px 40px -15px rgba(0,0,0,0.05);
-    animation: fadeUp 0.8s 0.1s var(--ease-out) both;
+    animation: cardEnter 1s var(--ease-spring) 0.1s both;
+    transform-style: preserve-3d;
+  }
+  @keyframes cardEnter {
+    0% { opacity: 0; transform: translateY(30px) rotateX(10deg) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
   }
 
-  /* ============ FORM ============ */
   .field { margin-bottom: 20px; }
-  
   .label {
     display: block;
     font-size: 13px;
@@ -162,14 +159,11 @@
   }
 
   .input-wrap { position: relative; }
-  
   .input-icon {
     position: absolute;
-    left: 16px;
-    top: 50%;
+    left: 16px; top: 50%;
     transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
+    width: 18px; height: 18px;
     color: var(--text-light);
     pointer-events: none;
     transition: color 0.3s var(--ease-out);
@@ -189,30 +183,13 @@
     outline: none;
     transition: all 0.3s var(--ease-out);
   }
-  .input::placeholder {
-    color: var(--text-light);
-    font-family: 'Inter', sans-serif;
-    font-weight: 400;
-  }
+  .input::placeholder { color: var(--text-light); font-family: 'Inter', sans-serif; font-weight: 400; }
   .input:hover { background: #f4f4f5; }
-  .input:focus {
-    background: var(--card-bg);
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.08);
-  }
-  .input.invalid {
-    border-color: var(--error);
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-  }
+  .input:focus { background: var(--card-bg); border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.08); }
+  .input.invalid { border-color: var(--error); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); }
   .input.invalid ~ .input-icon { color: var(--error); }
 
-  /* ============ OPTIONS (CHIPS) ============ */
-  .options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 24px;
-  }
+  .options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
   .chip {
     display: inline-flex;
     align-items: center;
@@ -229,22 +206,10 @@
     user-select: none;
     font-family: inherit;
   }
-  .chip:hover {
-    color: var(--text);
-    border-color: #d4d4d8;
-    background: #f4f4f5;
-  }
-  .chip.active {
-    color: #ffffff;
-    background: var(--accent);
-    border-color: var(--accent);
-    box-shadow: 0 4px 10px -2px rgba(24, 24, 27, 0.2);
-  }
-  .chip.active:hover {
-    background: var(--accent-hover);
-  }
+  .chip:hover { color: var(--text); border-color: #d4d4d8; background: #f4f4f5; }
+  .chip.active { color: #ffffff; background: var(--accent); border-color: var(--accent); box-shadow: 0 4px 10px -2px rgba(24, 24, 27, 0.2); }
+  .chip.active:hover { background: var(--accent-hover); }
 
-  /* ============ BUTTONS ============ */
   .btn {
     position: relative;
     display: inline-flex;
@@ -261,190 +226,89 @@
     cursor: pointer;
     overflow: hidden;
     transition: all 0.35s var(--ease-out);
+    will-change: transform;
   }
-  
   .btn-primary {
     background: var(--accent);
     color: #ffffff;
     box-shadow: 0 10px 25px -5px rgba(24, 24, 27, 0.3);
   }
-  .btn-primary:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px -5px rgba(24, 24, 27, 0.4);
-  }
-  .btn-primary:active { transform: translateY(0); }
-
+  .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 15px 30px -5px rgba(24, 24, 27, 0.4); }
+  .btn-primary:active { transform: scale(0.97) !important; }
   .btn svg { width: 18px; height: 18px; }
 
-  /* ============ RESULTADO ============ */
   .result {
     margin-top: 24px;
     padding-top: 24px;
     border-top: 1px dashed var(--border);
     display: none;
   }
-  .result.show {
-    display: block;
-    animation: fadeUp 0.5s var(--ease-out) both;
-  }
+  .result.show { display: block; animation: fadeUp 0.5s var(--ease-out) both; }
 
   .result-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--success);
-    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--success); margin-bottom: 12px;
   }
   .result-label svg { width: 16px; height: 16px; }
 
-  .output-wrap {
-    display: flex;
-    align-items: stretch;
-    gap: 8px;
-  }
+  .output-wrap { display: flex; align-items: stretch; gap: 8px; }
   .output {
-    flex: 1;
-    min-width: 0;
+    flex: 1; min-width: 0;
     padding: 14px 16px;
     font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: thin;
-    display: flex;
-    align-items: center;
+    font-size: 13px; font-weight: 500;
+    color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+    overflow-x: auto; white-space: nowrap; scrollbar-width: thin;
+    display: flex; align-items: center;
   }
   .output::-webkit-scrollbar { height: 4px; }
   .output::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 2px; }
 
   .btn-copy {
-    flex-shrink: 0;
-    padding: 0 20px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: var(--card-bg);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.25s var(--ease-out);
-    white-space: nowrap;
+    flex-shrink: 0; padding: 0 20px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--card-bg); color: var(--text);
+    font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; transition: all 0.25s var(--ease-out); white-space: nowrap;
   }
-  .btn-copy:hover {
-    background: var(--bg);
-    border-color: #d4d4d8;
-  }
+  .btn-copy:hover { background: var(--bg); border-color: #d4d4d8; }
   .btn-copy:active { transform: scale(0.97); }
-  .btn-copy.copied {
-    background: #ecfdf5;
-    border-color: var(--success);
-    color: var(--success);
-  }
+  .btn-copy.copied { background: #ecfdf5; border-color: var(--success); color: var(--success); }
   .btn-copy svg { width: 16px; height: 16px; }
 
-  /* ============ ACTIONS ============ */
-  .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 12px;
-  }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
   .action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 12px 16px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--card-bg);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.25s var(--ease-out);
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card-bg); color: var(--text);
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; text-decoration: none; transition: all 0.25s var(--ease-out);
   }
-  .action:hover {
-    background: var(--bg);
-    border-color: #d4d4d8;
-  }
+  .action:hover { background: var(--bg); border-color: #d4d4d8; }
   .action:active { transform: scale(0.98); }
   .action svg { width: 16px; height: 16px; }
 
-  /* ============ ERRO MESSAGE ============ */
-  .error-msg {
-    display: none;
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--error);
-    font-weight: 500;
-    padding-left: 4px;
-  }
+  .error-msg { display: none; margin-top: 8px; font-size: 12px; color: var(--error); font-weight: 500; padding-left: 4px; }
   .error-msg.show { display: block; animation: fadeUp 0.3s var(--ease-out) both; }
 
-  /* ============ FOOTER ============ */
-  .footer {
-    text-align: center;
-    margin-top: 24px;
-    font-size: 13px;
-    color: var(--text-muted);
-    animation: fadeUp 0.8s 0.2s var(--ease-out) both;
-  }
-  .footer a {
-    color: var(--text);
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: 1px solid var(--text);
-    transition: opacity 0.2s;
-  }
+  .footer { text-align: center; margin-top: 24px; font-size: 13px; color: var(--text-muted); animation: fadeUp 0.8s 0.2s var(--ease-out) both; }
+  .footer a { color: var(--text); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--text); transition: opacity 0.2s; }
   .footer a:hover { opacity: 0.7; }
 
-  /* ============ TOAST ============ */
   .toast {
-    position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    padding: 14px 24px;
-    background: var(--accent);
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 12px;
-    box-shadow: 0 15px 30px -5px rgba(24, 24, 27, 0.4);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 100;
-    transition: transform 0.5s var(--ease-spring);
-    pointer-events: none;
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px);
+    padding: 14px 24px; background: var(--accent); color: #ffffff; font-size: 14px; font-weight: 600;
+    border-radius: 12px; box-shadow: 0 15px 30px -5px rgba(24, 24, 27, 0.4);
+    display: flex; align-items: center; gap: 10px; z-index: 100;
+    transition: transform 0.5s var(--ease-spring); pointer-events: none;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast svg { width: 18px; height: 18px; color: var(--success); }
 
-  /* ============ ANIMAÇÕES ============ */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(15px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ============ MOBILE ============ */
   @media (max-width: 520px) {
     .card { padding: 24px 20px; border-radius: 20px; }
     .actions { grid-template-columns: 1fr; }
@@ -456,86 +320,49 @@
 </head>
 <body>
 
-  <!-- GRADE DE FUNDO -->
   <div class="bg-grid"></div>
 
-  <!-- WHATSAPP CTA -->
-  <a class="wa-cta"
-     href="https://wa.me/5548991126494?text=Ol%C3%A1%21%20Quero%20anunciar%20no%20seu%20site."
-     target="_blank"
-     rel="noopener noreferrer"
-     aria-label="Anuncie aqui via WhatsApp">
-    <svg viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-    </svg>
+  <a class="wa-cta" href="https://wa.me/5548991126494?text=Ol%C3%A1%21%20Quero%20anunciar%20no%20seu%20site." target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
     <span>Anuncie aqui</span>
   </a>
 
   <main class="wrap">
     <div class="container">
-
-      <!-- HEADER -->
       <header class="header">
         <div class="logo-container">
-          <!-- Substitua logo.png pela sua logo -->
           <img src="logo.png" alt="Logo" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\'><path d=\'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\'/><path d=\'M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\'/></svg>'">
         </div>
         <h1 class="title">Gerador de Link</h1>
         <p class="subtitle">Crie um link de redirecionamento com espera de 5 segundos e anúncios.</p>
       </header>
 
-      <!-- CARD PRINCIPAL -->
       <div class="card">
         <div class="field">
           <label class="label" for="urlInput">URL de Destino</label>
           <div class="input-wrap">
-            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-            </svg>
-            <input
-              type="text"
-              id="urlInput"
-              class="input"
-              placeholder="https://exemplo.com/pagina"
-              autocomplete="off"
-              spellcheck="false"
-              inputmode="url"
-            >
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <input type="text" id="urlInput" class="input" placeholder="https://exemplo.com/pagina" autocomplete="off" spellcheck="false" inputmode="url">
           </div>
           <div class="error-msg" id="errorMsg"></div>
         </div>
 
-        <!-- OPÇÕES DE SEGURANÇA -->
         <div class="options">
-          <button class="chip active" data-opt="encode" type="button" title="Protege a URL contra caracteres maliciosos">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            Codificar
-          </button>
-          <button class="chip" data-opt="stripWww" type="button" title="Remove o 'www.' do domínio">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            Limpar WWW
-          </button>
-          <button class="chip" data-opt="forceHttps" type="button" title="Força a conexão segura (HTTPS)">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Forçar HTTPS
-          </button>
+          <button class="chip active" data-opt="encode" type="button"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Codificar</button>
+          <button class="chip" data-opt="stripWww" type="button"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Limpar WWW</button>
+          <button class="chip" data-opt="forceHttps" type="button"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Forçar HTTPS</button>
         </div>
 
         <button class="btn btn-primary" id="generateBtn" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
           Gerar Link
         </button>
 
-        <!-- RESULTADO -->
         <div class="result" id="result">
           <div class="result-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             Link Gerado
           </div>
-
           <div class="output-wrap">
             <div class="output" id="output"></div>
             <button class="btn-copy" id="copyBtn" type="button">
@@ -543,7 +370,6 @@
               <span id="copyLabel">Copiar</span>
             </button>
           </div>
-
           <div class="actions">
             <a class="action" id="testLink" href="#" target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -557,14 +383,12 @@
         </div>
       </div>
 
-      <!-- FOOTER -->
       <p class="footer">
         <a href="index.html">Voltar para o início</a>
       </p>
     </div>
   </main>
 
-  <!-- TOAST -->
   <div class="toast" id="toast">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     Link copiado
@@ -574,20 +398,44 @@
 (function () {
   'use strict';
 
-  /* ============ REFS ============ */
-  const $input    = document.getElementById('urlInput');
-  const $error    = document.getElementById('errorMsg');
-  const $genBtn   = document.getElementById('generateBtn');
-  const $result   = document.getElementById('result');
-  const $output   = document.getElementById('output');
-  const $copyBtn  = document.getElementById('copyBtn');
-  const $copyLbl  = document.getElementById('copyLabel');
+  // Favicon Arredondado
+  (function roundFavicon() {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = 'logo.png';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const size = 64;
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const r = 16;
+      ctx.beginPath();
+      ctx.moveTo(r, 0); ctx.lineTo(size - r, 0); ctx.quadraticCurveTo(size, 0, size, r);
+      ctx.lineTo(size, size - r); ctx.quadraticCurveTo(size, size, size - r, size);
+      ctx.lineTo(r, size); ctx.quadraticCurveTo(0, size, 0, size - r);
+      ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0); ctx.closePath();
+      ctx.clip();
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+      
+      let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+      link.type = 'image/png'; link.rel = 'icon'; link.href = canvas.toDataURL();
+      document.head.appendChild(link);
+    };
+  })();
+
+  const $input = document.getElementById('urlInput');
+  const $error = document.getElementById('errorMsg');
+  const $genBtn = document.getElementById('generateBtn');
+  const $result = document.getElementById('result');
+  const $output = document.getElementById('output');
+  const $copyBtn = document.getElementById('copyBtn');
+  const $copyLbl = document.getElementById('copyLabel');
   const $testLink = document.getElementById('testLink');
   const $openRedirect = document.getElementById('openRedirect');
-  const $toast    = document.getElementById('toast');
-  const chips     = document.querySelectorAll('.chip');
+  const $toast = document.getElementById('toast');
+  const chips = document.querySelectorAll('.chip');
 
-  /* ============ OPÇÕES ============ */
   const opts = { encode: true, stripWww: false, forceHttps: false };
 
   chips.forEach(chip => {
@@ -595,107 +443,72 @@
       const key = chip.dataset.opt;
       opts[key] = !opts[key];
       chip.classList.toggle('active', opts[key]);
-      if ($result.classList.contains('show')) generate(); // Atualiza se já gerou
+      if ($result.classList.contains('show')) generate();
     });
   });
 
-  /* ============ URL BASE DO REDIRECIONAMENTO ============ */
   const redirectBase = (() => {
     const u = new URL(window.location.href);
-    u.search = '';
-    u.hash = '';
-    // Remove o "create.html" para apontar para a raiz (index.html)
+    u.search = ''; u.hash = '';
     const path = u.pathname.replace(/\/create\.html?$/i, '/').replace(/\/[^/]*$/, '/');
     return u.origin + path;
   })();
 
-  /* ============ VALIDAÇÃO ============ */
   function normalize(raw) {
     let s = (raw || '').trim();
     if (!s) return { ok: false, error: 'Por favor, digite uma URL.' };
-
-    // Adiciona HTTPS se não houver protocolo
-    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(s)) {
-      s = 'https://' + s;
-    }
-
+    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(s)) s = 'https://' + s;
     let u;
-    try {
-      u = new URL(s);
-    } catch (_) {
-      return { ok: false, error: 'URL inválida. Verifique o endereço digitado.' };
-    }
-
-    if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-      return { ok: false, error: 'Apenas links HTTP ou HTTPS são permitidos.' };
-    }
-    if (!u.hostname || !u.hostname.includes('.')) {
-      return { ok: false, error: 'Domínio inválido (ex: exemplo.com).' };
-    }
-
-    // Aplica opções
+    try { u = new URL(s); } catch (_) { return { ok: false, error: 'URL inválida. Verifique o endereço digitado.' }; }
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return { ok: false, error: 'Apenas links HTTP ou HTTPS são permitidos.' };
+    if (!u.hostname || !u.hostname.includes('.')) return { ok: false, error: 'Domínio inválido (ex: exemplo.com).' };
     if (opts.forceHttps && u.protocol === 'http:') u.protocol = 'https:';
     if (opts.stripWww && u.hostname.startsWith('www.')) u.hostname = u.hostname.slice(4);
-
     return { ok: true, url: u.href };
   }
 
-  /* ============ GERAR ============ */
   function generate() {
     const { ok, url, error } = normalize($input.value);
-
     if (!ok) {
       $input.classList.add('invalid');
       $error.textContent = error;
       $error.classList.add('show');
       return false;
     }
-
     $input.classList.remove('invalid');
     $error.classList.remove('show');
-
-    // Constrói o link final
-    const finalUrl = opts.encode
-      ? redirectBase + '?url=' + encodeURIComponent(url)
-      : redirectBase + '?url=' + url;
-
+    const finalUrl = opts.encode ? redirectBase + '?url=' + encodeURIComponent(url) : redirectBase + '?url=' + url;
     $output.textContent = finalUrl;
     $testLink.href = finalUrl;
     $result.classList.add('show');
-
     return finalUrl;
   }
 
-  /* ============ EVENTOS ============ */
+  // Botão Magnético
+  $genBtn.addEventListener('mousemove', (e) => {
+    const rect = $genBtn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    $genBtn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px) scale(1.02)`;
+  });
+  $genBtn.addEventListener('mouseleave', () => {
+    $genBtn.style.transform = 'translate(0, 0) scale(1)';
+  });
+
   $genBtn.addEventListener('click', generate);
-
-  $input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); generate(); }
-  });
-
+  $input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); generate(); } });
   $input.addEventListener('input', () => {
-    if ($input.classList.contains('invalid')) {
-      $input.classList.remove('invalid');
-      $error.classList.remove('show');
-    }
+    if ($input.classList.contains('invalid')) { $input.classList.remove('invalid'); $error.classList.remove('show'); }
   });
 
-  /* ============ COPIAR ============ */
   async function copyToClipboard(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch (_) {
-      // Fallback para navegadores antigos/mobile sem permissão
+    try { await navigator.clipboard.writeText(text); return true; } 
+    catch (_) {
       const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
       try { document.execCommand('copy'); } catch (_) {}
-      document.body.removeChild(ta);
-      return true;
+      document.body.removeChild(ta); return true;
     }
   }
 
@@ -710,27 +523,17 @@
     const text = $output.textContent;
     if (!text) return;
     await copyToClipboard(text);
-    
-    // Feedback visual
     $copyBtn.classList.add('copied');
     $copyLbl.textContent = 'Copiado!';
     showToast('Link copiado');
-    
-    setTimeout(() => {
-      $copyBtn.classList.remove('copied');
-      $copyLbl.textContent = 'Copiar';
-    }, 1800);
+    setTimeout(() => { $copyBtn.classList.remove('copied'); $copyLbl.textContent = 'Copiar'; }, 1800);
   });
 
-  /* ============ AÇÃO: VER REDIRECT (MESMA ABA) ============ */
   $openRedirect.addEventListener('click', () => {
     const href = $testLink.href;
-    if (href && href !== '#' && href !== window.location.href) {
-      window.location.href = href;
-    }
+    if (href && href !== '#' && href !== window.location.href) window.location.href = href;
   });
 
-  /* ============ FOCO INICIAL ============ */
   $input.focus();
 })();
 </script>
