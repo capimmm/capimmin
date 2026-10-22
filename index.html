@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Redirecionando…</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #050507;
+    --card-top: rgba(22,22,28,0.82);
+    --card-bot: rgba(12,12,16,0.92);
+    --border: rgba(255,255,255,0.08);
+    --text: #fafafa;
+    --text-2: #a1a1aa;
+    --text-3: #71717a;
+    --indigo: #6366f1;
+    --violet: #a855f7;
+    --pink: #ec4899;
+    --success: #10b981;
+    --error: #ef4444;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ============ ANÚNCIO DE FUNDO ============ */
+  .ad-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .ad-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.2;
+    filter: blur(8px) saturate(1.3) brightness(0.8);
+    transform: scale(1.15);
+  }
+
+  /* ============ AURORA ============ */
+  .aurora {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+  .aurora span {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    will-change: transform;
+  }
+  .aurora span:nth-child(1) {
+    width: 60vmax; height: 60vmax;
+    top: -25%; left: -15%;
+    background: radial-gradient(circle, rgba(99,102,241,0.55), transparent 65%);
+    animation: drift1 22s var(--ease-out) infinite alternate;
+  }
+  .aurora span:nth-child(2) {
+    width: 50vmax; height: 50vmax;
+    bottom: -25%; right: -15%;
+    background: radial-gradient(circle, rgba(168,85,247,0.5), transparent 65%);
+    animation: drift2 28s var(--ease-out) infinite alternate;
+  }
+  .aurora span:nth-child(3) {
+    width: 40vmax; height: 40vmax;
+    top: 40%; left: 40%;
+    background: radial-gradient(circle, rgba(236,72,153,0.35), transparent 65%);
+    animation: drift3 32s var(--ease-out) infinite alternate;
+  }
+  @keyframes drift1 { to { transform: translate(18%, 22%) scale(1.15); } }
+  @keyframes drift2 { to { transform: translate(-22%, -18%) scale(1.1); } }
+  @keyframes drift3 { to { transform: translate(-25%, 30%) scale(0.85); } }
+
+  /* ============ VIGNETTE ============ */
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 60% 65% at 50% 50%,
+      transparent 25%,
+      rgba(5,5,7,0.75) 75%,
+      var(--bg) 100%
+    );
+  }
+
+  /* ============ NOISE ============ */
+  .noise {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ============ AD TAG ============ */
+  .ad-tag {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 10;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    padding: 5px 9px;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 5px;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* ============ LAYOUT ============ */
+  .wrap {
+    position: relative;
+    z-index: 5;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+  }
+
+  /* ============ CARD ============ */
+  .card {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    padding: 40px 32px 32px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, var(--card-top), var(--card-bot));
+    backdrop-filter: blur(50px) saturate(1.4);
+    -webkit-backdrop-filter: blur(50px) saturate(1.4);
+    border: 1px solid var(--border);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.05) inset,
+      0 30px 80px -25px rgba(0,0,0,0.95),
+      0 0 0 1px rgba(0,0,0,0.5);
+    text-align: center;
+    animation: cardEnter 0.9s var(--ease-out) both;
+  }
+  @keyframes cardEnter {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(8px); }
+    to   { opacity: 1; transform: translateY(0) scale(1);      filter: blur(0);  }
+  }
+
+  /* Borda com glow em gradiente */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.14),
+      transparent 40%,
+      transparent 60%,
+      rgba(99,102,241,0.18)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Glow de sucesso */
+  .card.success {
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.05) inset,
+      0 30px 80px -25px rgba(0,0,0,0.95),
+      0 0 50px -10px rgba(16,185,129,0.35);
+    transition: box-shadow 0.8s var(--ease-out);
+  }
+
+  /* ============ ENTRADA ESCALONADA ============ */
+  .icon, h1, .sub, .countdown, .btn {
+    opacity: 0;
+    animation: fadeUp 0.8s var(--ease-out) forwards;
+  }
+  .icon      { animation-delay: 0.15s; }
+  h1         { animation-delay: 0.25s; }
+  .sub       { animation-delay: 0.30s; }
+  .countdown { animation-delay: 0.35s; }
+  .btn       { animation-delay: 0.45s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ ÍCONE ============ */
+  .icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 18px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(145deg, rgba(99,102,241,0.15), rgba(168,85,247,0.08));
+    border: 1px solid rgba(99,102,241,0.22);
+    box-shadow:
+      0 0 0 1px rgba(99,102,241,0.08) inset,
+      0 8px 24px -8px rgba(99,102,241,0.4);
+    color: #a5b4fc;
+  }
+  .icon svg {
+    width: 22px;
+    height: 22px;
+    animation: iconFloat 3.5s ease-in-out infinite;
+  }
+  @keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+  }
+
+  /* ============ TÍTULO ============ */
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .sub {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-3);
+    line-height: 1.55;
+    margin-bottom: 28px;
+  }
+  .sub .domain {
+    color: var(--text-2);
+    font-weight: 500;
+    word-break: break-all;
+  }
+
+  /* ============ COUNTDOWN ============ */
+  .countdown {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 26px;
+  }
+  .countdown svg.ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    overflow: visible;
+  }
+  .ring-track, .ring-progress {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+  }
+  .ring-track { stroke: rgba(255,255,255,0.06); }
+  .ring-progress {
+    stroke: url(#ringGrad);
+    stroke-dasharray: 254.47;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 5.1s linear, stroke 0.5s ease;
+  }
+  .countdown.running .ring-progress {
+    stroke-dashoffset: 254.47;
+  }
+  .countdown.done .ring-progress {
+    stroke: var(--success);
+    stroke-dashoffset: 0;
+    transition: stroke 0.5s ease, stroke-dashoffset 0.5s var(--ease-out);
+  }
+
+  /* Viewport do número (com máscara para roll) */
+  .num-viewport {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    mask-image: linear-gradient(180deg, transparent 15%, #000 32%, #000 68%, transparent 85%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 15%, #000 32%, #000 68%, transparent 85%);
+  }
+  .num {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    will-change: transform, opacity, filter;
+  }
+  .check-mark {
+    width: 30px;
+    height: 30px;
+    fill: none;
+    stroke: var(--success);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .check-mark polyline {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: drawCheck 0.55s 0.15s var(--ease-out) forwards;
+  }
+  @keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Ripples de sucesso */
+  .countdown.done::before,
+  .countdown.done::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--success);
+    opacity: 0;
+    animation: ripple 1s var(--ease-out) forwards;
+  }
+  .countdown.done::after { animation-delay: 0.12s; }
+  @keyframes ripple {
+    0%   { transform: scale(0.85); opacity: 0.6; }
+    100% { transform: scale(1.9);  opacity: 0;   }
+  }
+
+  /* ============ BOTÃO ============ */
+  .btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    background: rgba(255,255,255,0.04);
+    color: var(--text-3);
+    cursor: not-allowed;
+    overflow: hidden;
+    transition:
+      background 0.5s var(--ease-out),
+      color 0.35s var(--ease-out),
+      box-shadow 0.5s var(--ease-out),
+      transform 0.35s var(--ease-out);
+  }
+  .btn.ready {
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    color: #fff;
+    cursor: pointer;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.12) inset,
+      0 12px 30px -8px rgba(99,102,241,0.6),
+      0 6px 14px -6px rgba(168,85,247,0.5);
+  }
+  .btn.ready:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.16) inset,
+      0 16px 38px -8px rgba(99,102,241,0.75),
+      0 8px 18px -6px rgba(168,85,247,0.6);
+  }
+  .btn.ready:active {
+    transform: translateY(0);
+    transition-duration: 0.1s;
+  }
+  .btn .label { display: inline-block; }
+  .btn .arrow {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+  }
+  .btn.ready .arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .btn.ready:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  /* Shine sweep no ready */
+  .btn.ready::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: translateX(-100%);
+    animation: shine 3.5s var(--ease-out) infinite;
+    pointer-events: none;
+  }
+  @keyframes shine {
+    0%, 55%   { transform: translateX(-100%); }
+    80%, 100% { transform: translateX(100%);  }
+  }
+
+  /* ============ ERRO ============ */
+  .error {
+    display: none;
+    margin-top: 14px;
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #fca5a5;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    text-align: left;
+  }
+  .error.show {
+    display: block;
+    animation: fadeUp 0.5s var(--ease-out) both;
+  }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 480px) {
+    .card { padding: 34px 24px 26px; border-radius: 22px; }
+    h1 { font-size: 19px; }
+    .sub { font-size: 12.5px; }
+    .countdown { width: 78px; height: 78px; }
+    .num { font-size: 23px; }
+    .icon { width: 48px; height: 48px; }
+  }
+
+  /* ============ ACESSIBILIDADE ============ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .aurora span,
+    .icon svg,
+    .btn.ready::before { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ANÚNCIO DE FUNDO — troque o src -->
+  <div class="ad-bg">
+    <img src="https://picsum.photos/1920/1080?random=42" alt="">
+  </div>
+
+  <!-- AURORA -->
+  <div class="aurora"><span></span><span></span><span></span></div>
+
+  <!-- VIGNETTE -->
+  <div class="vignette"></div>
+
+  <!-- NOISE -->
+  <div class="noise"></div>
+
+  <!-- AD TAG -->
+  <div class="ad-tag">Publicidade</div>
+
+  <!-- CONTEÚDO -->
+  <main class="wrap">
+    <div class="card" role="region" aria-label="Redirecionamento">
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </div>
+
+      <h1>Redirecionando você</h1>
+      <p class="sub" id="sub">Preparando o link…</p>
+
+      <div class="countdown" id="countdown" aria-live="polite" aria-atomic="true">
+        <svg class="ring" viewBox="0 0 90 90">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%"   stop-color="#6366f1"/>
+              <stop offset="50%"  stop-color="#a855f7"/>
+              <stop offset="100%" stop-color="#ec4899"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-track" cx="45" cy="45" r="40.5"/>
+          <circle class="ring-progress" id="ringProgress" cx="45" cy="45" r="40.5"/>
+        </svg>
+        <div class="num-viewport">
+          <div class="num" id="num">5</div>
+        </div>
+      </div>
+
+      <button class="btn" id="btn" disabled type="button">
+        <span class="label" id="btnLabel">Aguarde…</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+
+      <div class="error" id="error" role="alert"></div>
+    </div>
+  </main>
+
+<script>
+(function () {
+  'use strict';
+
+  const TOTAL = 5;
+  const CIRC  = 2 * Math.PI * 40.5; // ~254.47
+
+  const $card      = document.querySelector('.card');
+  const $sub       = document.getElementById('sub');
+  const $countdown = document.getElementById('countdown');
+  const $ring      = document.getElementById('ringProgress');
+  const $num       = document.getElementById('num');
+  const $btn       = document.getElementById('btn');
+  const $btnLabel  = document.getElementById('btnLabel');
+  const $error     = document.getElementById('error');
+
+  /* ---------- Validação da URL ---------- */
+  const raw = (new URLSearchParams(location.search).get('url') || '').trim();
+  let target = null;
+  try {
+    if (raw) {
+      const u = new URL(raw);
+      if (u.protocol === 'http:' || u.protocol === 'https:') target = u.href;
+    }
+  } catch (_) {}
+
+  if (!target) {
+    $sub.textContent = 'Nenhum link válido informado';
+    $ring.style.display = 'none';
+    $num.textContent = '!';
+    $num.style.color = 'var(--error)';
+    $num.style.fontSize = '30px';
+    $btnLabel.textContent = 'Sem URL';
+    $error.textContent = 'Use ?url= com um endereço http(s) válido.';
+    $error.classList.add('show');
+    return;
+  }
+
+  /* ---------- Mostrar domínio ---------- */
+  const host = new URL(target).hostname.replace(/^www\./, '');
+  $sub.innerHTML = 'Você está indo para <span class="domain"></span>';
+  $sub.querySelector('.domain').textContent = host;
+
+  /* ---------- Iniciar animação do anel ---------- */
+  $ring.style.strokeDasharray = CIRC;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    $countdown.classList.add('running');
+  }));
+
+  /* ---------- Roll do número ---------- */
+  function rollTo(n) {
+    $num.animate(
+      [
+        { transform: 'translateY(0%)',    opacity: 1, filter: 'blur(0px)' },
+        { transform: 'translateY(-110%)', opacity: 0, filter: 'blur(3px)' }
+      ],
+      { duration: 260, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' }
+    ).onfinish = () => {
+      $num.textContent = n;
+      $num.animate(
+        [
+          { transform: 'translateY(110%)', opacity: 0, filter: 'blur(3px)' },
+          { transform: 'translateY(0%)',   opacity: 1, filter: 'blur(0px)' }
+        ],
+        { duration: 420, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+      );
+    };
+  }
+
+  /* ---------- Loop ---------- */
+  let remaining = TOTAL;
+  const timer = setInterval(() => {
+    remaining -= 1;
+    if (remaining > 0) {
+      rollTo(remaining);
+    } else {
+      clearInterval(timer);
+      finish();
+    }
+  }, 1000);
+
+  /* ---------- Sucesso ---------- */
+  function finish() {
+    // Sobe o "1" para sair
+    $num.animate(
+      [
+        { transform: 'translateY(0%)',    opacity: 1, filter: 'blur(0px)' },
+        { transform: 'translateY(-110%)', opacity: 0, filter: 'blur(3px)' }
+      ],
+      { duration: 260, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' }
+    ).onfinish = () => {
+      // Troca para o checkmark
+      $num.innerHTML =
+        '<svg class="check-mark" viewBox="0 0 24 24" aria-hidden="true">' +
+          '<polyline points="20 6 9 17 4 12"/>' +
+        '</svg>';
+
+      $countdown.classList.add('done');
+      $card.classList.add('success');
+
+      $num.animate(
+        [
+          { transform: 'translateY(110%)', opacity: 0, filter: 'blur(3px)' },
+          { transform: 'translateY(0%)',   opacity: 1, filter: 'blur(0px)' }
+        ],
+        { duration: 450, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'forwards' }
+      );
+
+      // Libera o botão
+      $btn.disabled = false;
+      $btn.classList.add('ready');
+      $btnLabel.textContent = 'Continuar para o site';
+
+      // Pop do botão
+      $btn.animate(
+        [
+          { transform: 'scale(1)'     },
+          { transform: 'scale(1.035)' },
+          { transform: 'scale(1)'     }
+        ],
+        { duration: 520, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }
+      );
+
+      $btn.addEventListener('click', () => {
+        location.href = target;
+      }, { once: true });
+    };
+  }
+})();
+</script>
+</body>
+</html>
