@@ -11,7 +11,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-  /* ============ TOKENS ============ */
   :root {
     --bg: #050507;
     --card-top: rgba(22,22,28,0.82);
@@ -25,26 +24,19 @@
     --pink: #ec4899;
     --success: #10b981;
     --error: #ef4444;
+    --wa: #25d366;
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-in: cubic-bezier(0.4, 0, 1, 1);
   }
 
-  *, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; overflow: hidden; }
-
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
   }
 
   /* ============ ANÚNCIO DE FUNDO ============ */
@@ -54,23 +46,25 @@
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
+    background: var(--bg);
   }
-  .ad-bg img {
+  .ad-bg img,
+  .ad-bg video {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     opacity: 0.2;
     filter: blur(8px) saturate(1.3) brightness(0.8);
     transform: scale(1.15);
+    pointer-events: none;
   }
 
   /* ============ AURORA ============ */
   .aurora {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    overflow: hidden;
-    pointer-events: none;
+    position: fixed; inset: 0; z-index: 1;
+    overflow: hidden; pointer-events: none;
     mix-blend-mode: screen;
   }
   .aurora span {
@@ -101,12 +95,9 @@
   @keyframes drift2 { to { transform: translate(-22%, -18%) scale(1.1); } }
   @keyframes drift3 { to { transform: translate(-25%, 30%) scale(0.85); } }
 
-  /* ============ VIGNETTE ============ */
+  /* ============ VIGNETTE + NOISE ============ */
   .vignette {
-    position: fixed;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
+    position: fixed; inset: 0; z-index: 2; pointer-events: none;
     background: radial-gradient(
       ellipse 60% 65% at 50% 50%,
       transparent 25%,
@@ -114,13 +105,8 @@
       var(--bg) 100%
     );
   }
-
-  /* ============ NOISE ============ */
   .noise {
-    position: fixed;
-    inset: 0;
-    z-index: 3;
-    pointer-events: none;
+    position: fixed; inset: 0; z-index: 3; pointer-events: none;
     opacity: 0.035;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
@@ -143,6 +129,45 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
+
+  /* ============ WHATSAPP CTA ============ */
+  .wa-cta {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: rgba(255,255,255,0.55);
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-decoration: none;
+    transition: all 0.35s var(--ease-out);
+  }
+  .wa-cta:hover {
+    color: #fff;
+    background: rgba(37,211,102,0.15);
+    border-color: rgba(37,211,102,0.45);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px -8px rgba(37,211,102,0.5);
+  }
+  .wa-cta:active { transform: translateY(0); }
+  .wa-cta svg {
+    width: 14px;
+    height: 14px;
+    color: var(--wa);
+    flex-shrink: 0;
+    transition: transform 0.35s var(--ease-spring);
+  }
+  .wa-cta:hover svg { transform: scale(1.1); }
 
   /* ============ LAYOUT ============ */
   .wrap {
@@ -178,7 +203,6 @@
     to   { opacity: 1; transform: translateY(0) scale(1);      filter: blur(0);  }
   }
 
-  /* Borda com glow em gradiente */
   .card::before {
     content: '';
     position: absolute;
@@ -198,7 +222,6 @@
     pointer-events: none;
   }
 
-  /* Glow de sucesso */
   .card.success {
     box-shadow:
       0 1px 0 rgba(255,255,255,0.05) inset,
@@ -295,16 +318,13 @@
     stroke-dashoffset: 0;
     transition: stroke-dashoffset 5.1s linear, stroke 0.5s ease;
   }
-  .countdown.running .ring-progress {
-    stroke-dashoffset: 254.47;
-  }
+  .countdown.running .ring-progress { stroke-dashoffset: 254.47; }
   .countdown.done .ring-progress {
     stroke: var(--success);
     stroke-dashoffset: 0;
     transition: stroke 0.5s ease, stroke-dashoffset 0.5s var(--ease-out);
   }
 
-  /* Viewport do número (com máscara para roll) */
   .num-viewport {
     position: absolute;
     inset: 0;
@@ -339,11 +359,8 @@
     stroke-dashoffset: 30;
     animation: drawCheck 0.55s 0.15s var(--ease-out) forwards;
   }
-  @keyframes drawCheck {
-    to { stroke-dashoffset: 0; }
-  }
+  @keyframes drawCheck { to { stroke-dashoffset: 0; } }
 
-  /* Ripples de sucesso */
   .countdown.done::before,
   .countdown.done::after {
     content: '';
@@ -414,15 +431,9 @@
     transform: translateX(-4px);
     transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out);
   }
-  .btn.ready .arrow {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  .btn.ready:hover .arrow {
-    transform: translateX(3px);
-  }
+  .btn.ready .arrow { opacity: 1; transform: translateX(0); }
+  .btn.ready:hover .arrow { transform: translateX(3px); }
 
-  /* Shine sweep no ready */
   .btn.ready::before {
     content: '';
     position: absolute;
@@ -463,39 +474,48 @@
     .countdown { width: 78px; height: 78px; }
     .num { font-size: 23px; }
     .icon { width: 48px; height: 48px; }
+    .wa-cta { font-size: 11px; padding: 6px 10px; }
+    .wa-cta span { display: none; }
+    .wa-cta { padding: 8px; }
+    .wa-cta svg { width: 16px; height: 16px; }
   }
 
-  /* ============ ACESSIBILIDADE ============ */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
-    .aurora span,
-    .icon svg,
-    .btn.ready::before { animation: none; }
+    .aurora span, .icon svg, .btn.ready::before { animation: none; }
   }
 </style>
 </head>
 <body>
 
-  <!-- ANÚNCIO DE FUNDO — troque o src -->
-  <div class="ad-bg">
-    <img src="https://picsum.photos/1920/1080?random=42" alt="">
-  </div>
+  <!-- ANÚNCIO DE FUNDO (populado via JS) -->
+  <div class="ad-bg" id="adBg" aria-hidden="true"></div>
 
   <!-- AURORA -->
   <div class="aurora"><span></span><span></span><span></span></div>
 
-  <!-- VIGNETTE -->
+  <!-- VIGNETTE + NOISE -->
   <div class="vignette"></div>
-
-  <!-- NOISE -->
   <div class="noise"></div>
 
   <!-- AD TAG -->
   <div class="ad-tag">Publicidade</div>
+
+  <!-- WHATSAPP CTA -->
+  <a class="wa-cta"
+     href="https://wa.me/5548991126494?text=Ol%C3%A1%21%20Tenho%20interesse%20em%20anunciar%20no%20seu%20site."
+     target="_blank"
+     rel="noopener noreferrer"
+     aria-label="Anuncie aqui via WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+    <span>Anuncie aqui</span>
+  </a>
 
   <!-- CONTEÚDO -->
   <main class="wrap">
@@ -543,8 +563,80 @@
 (function () {
   'use strict';
 
+  /* ============================================================
+     1) CARREGAMENTO DO ANÚNCIO (files/ads.json)
+     ============================================================ */
+  const AD_FOLDER = 'files/';
+  const $adBg = document.getElementById('adBg');
+
+  // Resolve o caminho do anúncio (aceita nome simples, "files/..." ou URL)
+  function resolveAdSrc(name) {
+    if (/^(https?:)?\/\//i.test(name)) return name;
+    if (name.startsWith('files/')) return name;
+    return AD_FOLDER + name;
+  }
+
+  function isVideoFile(path) {
+    return /\.(mp4|webm|ogg|mov|m4v)$/i.test(path);
+  }
+
+  function renderAd(src, onError) {
+    $adBg.innerHTML = '';
+
+    if (isVideoFile(src)) {
+      const v = document.createElement('video');
+      v.src = src;
+      v.autoplay = true;
+      v.muted = true;
+      v.loop = true;
+      v.playsInline = true;
+      v.setAttribute('playsinline', '');
+      v.setAttribute('muted', '');
+      v.setAttribute('aria-hidden', 'true');
+      v.addEventListener('error', onError, { once: true });
+      $adBg.appendChild(v);
+      v.play().catch(() => { /* autoplay pode falhar — ok */ });
+    } else {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      img.addEventListener('error', onError, { once: true });
+      $adBg.appendChild(img);
+    }
+  }
+
+  function pickAndRender(list) {
+    if (!list.length) {
+      $adBg.style.display = 'none';
+      return;
+    }
+    const idx = Math.floor(Math.random() * list.length);
+    const picked = list[idx];
+    const rest = list.filter((_, i) => i !== idx);
+
+    renderAd(resolveAdSrc(picked), () => {
+      // Se falhou (arquivo não existe), tenta outro
+      pickAndRender(rest);
+    });
+  }
+
+  fetch(AD_FOLDER + 'ads.json', { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => {
+      const list = Array.isArray(data) ? data : (data.ads || []);
+      pickAndRender(list);
+    })
+    .catch(() => {
+      // Sem ads.json ou erro: esconde o fundo, aurora já cobre
+      $adBg.style.display = 'none';
+    });
+
+  /* ============================================================
+     2) LÓGICA DE REDIRECIONAMENTO
+     ============================================================ */
   const TOTAL = 5;
-  const CIRC  = 2 * Math.PI * 40.5; // ~254.47
+  const CIRC  = 2 * Math.PI * 40.5;
 
   const $card      = document.querySelector('.card');
   const $sub       = document.getElementById('sub');
@@ -555,7 +647,6 @@
   const $btnLabel  = document.getElementById('btnLabel');
   const $error     = document.getElementById('error');
 
-  /* ---------- Validação da URL ---------- */
   const raw = (new URLSearchParams(location.search).get('url') || '').trim();
   let target = null;
   try {
@@ -577,18 +668,15 @@
     return;
   }
 
-  /* ---------- Mostrar domínio ---------- */
   const host = new URL(target).hostname.replace(/^www\./, '');
   $sub.innerHTML = 'Você está indo para <span class="domain"></span>';
   $sub.querySelector('.domain').textContent = host;
 
-  /* ---------- Iniciar animação do anel ---------- */
   $ring.style.strokeDasharray = CIRC;
   requestAnimationFrame(() => requestAnimationFrame(() => {
     $countdown.classList.add('running');
   }));
 
-  /* ---------- Roll do número ---------- */
   function rollTo(n) {
     $num.animate(
       [
@@ -608,7 +696,6 @@
     };
   }
 
-  /* ---------- Loop ---------- */
   let remaining = TOTAL;
   const timer = setInterval(() => {
     remaining -= 1;
@@ -620,9 +707,7 @@
     }
   }, 1000);
 
-  /* ---------- Sucesso ---------- */
   function finish() {
-    // Sobe o "1" para sair
     $num.animate(
       [
         { transform: 'translateY(0%)',    opacity: 1, filter: 'blur(0px)' },
@@ -630,7 +715,6 @@
       ],
       { duration: 260, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' }
     ).onfinish = () => {
-      // Troca para o checkmark
       $num.innerHTML =
         '<svg class="check-mark" viewBox="0 0 24 24" aria-hidden="true">' +
           '<polyline points="20 6 9 17 4 12"/>' +
@@ -647,12 +731,10 @@
         { duration: 450, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'forwards' }
       );
 
-      // Libera o botão
       $btn.disabled = false;
       $btn.classList.add('ready');
       $btnLabel.textContent = 'Continuar para o site';
 
-      // Pop do botão
       $btn.animate(
         [
           { transform: 'scale(1)'     },
