@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Criar link de redirecionamento</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #050507;
+    --card-top: rgba(22,22,28,0.82);
+    --card-bot: rgba(12,12,16,0.92);
+    --border: rgba(255,255,255,0.08);
+    --text: #fafafa;
+    --text-2: #a1a1aa;
+    --text-3: #71717a;
+    --indigo: #6366f1;
+    --violet: #a855f7;
+    --pink: #ec4899;
+    --success: #10b981;
+    --error: #ef4444;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ============ AURORA ============ */
+  .aurora {
+    position: fixed; inset: 0; z-index: 0;
+    overflow: hidden; pointer-events: none;
+    mix-blend-mode: screen;
+  }
+  .aurora span {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    will-change: transform;
+  }
+  .aurora span:nth-child(1) {
+    width: 55vmax; height: 55vmax;
+    top: -20%; left: -15%;
+    background: radial-gradient(circle, rgba(99,102,241,0.45), transparent 65%);
+    animation: drift1 24s var(--ease-out) infinite alternate;
+  }
+  .aurora span:nth-child(2) {
+    width: 45vmax; height: 45vmax;
+    bottom: -20%; right: -15%;
+    background: radial-gradient(circle, rgba(168,85,247,0.4), transparent 65%);
+    animation: drift2 30s var(--ease-out) infinite alternate;
+  }
+  .aurora span:nth-child(3) {
+    width: 35vmax; height: 35vmax;
+    top: 45%; left: 45%;
+    background: radial-gradient(circle, rgba(236,72,153,0.25), transparent 65%);
+    animation: drift3 34s var(--ease-out) infinite alternate;
+  }
+  @keyframes drift1 { to { transform: translate(18%, 20%) scale(1.15); } }
+  @keyframes drift2 { to { transform: translate(-20%, -18%) scale(1.1); } }
+  @keyframes drift3 { to { transform: translate(-22%, 26%) scale(0.9); } }
+
+  /* VIGNETTE + NOISE */
+  .vignette {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse 70% 70% at 50% 40%, transparent 30%, rgba(5,5,7,0.7) 80%, var(--bg) 100%);
+  }
+  .noise {
+    position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ============ LAYOUT ============ */
+  .wrap {
+    position: relative;
+    z-index: 5;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 520px;
+  }
+
+  /* ============ HEADER ============ */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+    animation: fadeUp 0.8s var(--ease-out) both;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.02);
+    margin-bottom: 20px;
+  }
+  .brand-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  h1.title {
+    font-size: clamp(24px, 5vw, 30px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #a5b4fc, #c4b5fd, #f0abfc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-3);
+    line-height: 1.5;
+  }
+
+  /* ============ CARD ============ */
+  .card {
+    position: relative;
+    padding: 28px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, var(--card-top), var(--card-bot));
+    backdrop-filter: blur(50px) saturate(1.4);
+    -webkit-backdrop-filter: blur(50px) saturate(1.4);
+    border: 1px solid var(--border);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.05) inset,
+      0 30px 80px -25px rgba(0,0,0,0.95),
+      0 0 0 1px rgba(0,0,0,0.5);
+    animation: fadeUp 0.8s 0.1s var(--ease-out) both;
+  }
+  .card::before {
+    content: '';
+    position: absolute; inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.14), transparent 40%, transparent 60%, rgba(99,102,241,0.18));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ============ FORM ============ */
+  .field { margin-bottom: 18px; }
+  .label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .input-wrap {
+    position: relative;
+  }
+  .input-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    width: 16px; height: 16px;
+    color: var(--text-3);
+    pointer-events: none;
+    transition: color 0.3s var(--ease-out);
+  }
+  .input-wrap:focus-within .input-icon { color: var(--indigo); }
+
+  .input {
+    width: 100%;
+    padding: 13px 14px 13px 40px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 11px;
+    outline: none;
+    transition:
+      border-color 0.3s var(--ease-out),
+      background 0.3s var(--ease-out),
+      box-shadow 0.3s var(--ease-out);
+  }
+  .input::placeholder {
+    color: rgba(255,255,255,0.2);
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+  }
+  .input:hover { background: rgba(255,255,255,0.05); }
+  .input:focus {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(99,102,241,0.5);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+  }
+  .input.invalid {
+    border-color: rgba(239,68,68,0.5);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+  }
+  .input.invalid ~ .input-icon { color: var(--error); }
+
+  /* ============ OPTIONS ============ */
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 11px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-3);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.25s var(--ease-out);
+    user-select: none;
+    font-family: inherit;
+  }
+  .chip:hover {
+    color: var(--text-2);
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+  }
+  .chip.active {
+    color: #c4b5fd;
+    background: rgba(99,102,241,0.1);
+    border-color: rgba(99,102,241,0.35);
+  }
+  .chip.active:hover {
+    background: rgba(99,102,241,0.15);
+  }
+
+  /* ============ BUTTONS ============ */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 11px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.35s var(--ease-out);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    color: #fff;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.1) inset,
+      0 10px 28px -6px rgba(99,102,241,0.5);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.15) inset,
+      0 14px 36px -6px rgba(99,102,241,0.7);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    animation: shine 4s var(--ease-out) infinite;
+    pointer-events: none;
+  }
+  @keyframes shine {
+    0%, 55%   { transform: translateX(-100%); }
+    80%, 100% { transform: translateX(100%);  }
+  }
+  .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* ============ RESULT ============ */
+  .result {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: none;
+  }
+  .result.show {
+    display: block;
+    animation: fadeUp 0.55s var(--ease-out) both;
+  }
+
+  .result-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--success);
+    margin-bottom: 10px;
+  }
+  .result-label svg { width: 14px; height: 14px; }
+
+  .output-wrap {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .output {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #c4b5fd;
+    background: rgba(99,102,241,0.06);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 11px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: thin;
+    display: flex;
+    align-items: center;
+  }
+  .output::-webkit-scrollbar { height: 4px; }
+  .output::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 2px; }
+
+  .btn-copy {
+    flex-shrink: 0;
+    padding: 0 16px;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.25s var(--ease-out);
+    white-space: nowrap;
+  }
+  .btn-copy:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.16);
+  }
+  .btn-copy:active { transform: scale(0.97); }
+  .btn-copy.copied {
+    background: rgba(16,185,129,0.15);
+    border-color: rgba(16,185,129,0.4);
+    color: var(--success);
+  }
+  .btn-copy svg { width: 14px; height: 14px; }
+
+  /* ============ ACTIONS ============ */
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.02);
+    color: var(--text-2);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s var(--ease-out);
+  }
+  .action:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.14);
+    color: var(--text);
+  }
+  .action:active { transform: scale(0.98); }
+  .action svg { width: 14px; height: 14px; }
+
+  /* ============ ERROR MSG ============ */
+  .error-msg {
+    display: none;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #fca5a5;
+    padding-left: 4px;
+  }
+  .error-msg.show { display: block; animation: fadeUp 0.4s var(--ease-out) both; }
+
+  /* ============ FOOTER ============ */
+  .footer {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 12px;
+    color: var(--text-3);
+    animation: fadeUp 0.8s 0.2s var(--ease-out) both;
+  }
+  .footer code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px;
+    color: var(--text-2);
+  }
+
+  /* ============ ANIMATIONS ============ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); filter: blur(4px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    padding: 12px 20px;
+    background: rgba(16,185,129,0.95);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px -5px rgba(16,185,129,0.5);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+    transition: transform 0.5s var(--ease-spring);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast svg { width: 16px; height: 16px; }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 520px) {
+    .card { padding: 22px 20px; border-radius: 20px; }
+    .actions { grid-template-columns: 1fr; }
+    .output { font-size: 11.5px; }
+    .btn-copy { padding: 0 12px; font-size: 12px; }
+  }
+
+  /* ============ ACCESSIBILITY ============ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- AURORA -->
+  <div class="aurora"><span></span><span></span><span></span></div>
+  <div class="vignette"></div>
+  <div class="noise"></div>
+
+  <main class="wrap">
+    <div class="container">
+
+      <!-- HEADER -->
+      <header class="header">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          Link Generator
+        </div>
+        <h1 class="title">Crie seu <span class="gradient-text">link de redirecionamento</span></h1>
+        <p class="subtitle">Gere um link curto com espera de 5 segundos e anúncio de fundo.</p>
+      </header>
+
+      <!-- CARD -->
+      <div class="card">
+
+        <div class="field">
+          <label class="label" for="urlInput">URL de destino</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            <input
+              type="text"
+              id="urlInput"
+              class="input"
+              placeholder="https://exemplo.com/pagina"
+              autocomplete="off"
+              spellcheck="false"
+              inputmode="url"
+            >
+          </div>
+          <div class="error-msg" id="errorMsg"></div>
+        </div>
+
+        <!-- OPTIONS -->
+        <div class="options">
+          <button class="chip active" data-opt="encode" type="button" title="Codifica a URL (mais seguro)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Codificar URL
+          </button>
+          <button class="chip" data-opt="stripWww" type="button" title="Remove www. do domínio">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Limpar www.
+          </button>
+          <button class="chip" data-opt="forceHttps" type="button" title="Força https:// se não especificado">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Forçar HTTPS
+          </button>
+        </div>
+
+        <button class="btn btn-primary" id="generateBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+          Gerar link
+        </button>
+
+        <!-- RESULT -->
+        <div class="result" id="result">
+          <div class="result-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Link gerado
+          </div>
+
+          <div class="output-wrap">
+            <div class="output" id="output"></div>
+            <button class="btn-copy" id="copyBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span id="copyLabel">Copiar</span>
+            </button>
+          </div>
+
+          <div class="actions">
+            <a class="action" id="testLink" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Testar link
+            </a>
+            <button class="action" id="openRedirect" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              Ver redirect
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <p class="footer">
+        Dica: use <code>?url=</code> direto na página de redirect.
+      </p>
+    </div>
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    Link copiado
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============ REFS ============ */
+  const $input    = document.getElementById('urlInput');
+  const $error    = document.getElementById('errorMsg');
+  const $genBtn   = document.getElementById('generateBtn');
+  const $result   = document.getElementById('result');
+  const $output   = document.getElementById('output');
+  const $copyBtn  = document.getElementById('copyBtn');
+  const $copyLbl  = document.getElementById('copyLabel');
+  const $testLink = document.getElementById('testLink');
+  const $openRedirect = document.getElementById('openRedirect');
+  const $toast    = document.getElementById('toast');
+  const chips     = document.querySelectorAll('.chip');
+
+  /* ============ OPÇÕES ============ */
+  const opts = { encode: true, stripWww: false, forceHttps: false };
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const key = chip.dataset.opt;
+      opts[key] = !opts[key];
+      chip.classList.toggle('active', opts[key]);
+      if ($result.classList.contains('show')) generate();
+    });
+  });
+
+  /* ============ URL PÚBLICA (onde o redirect está hospedado) ============ */
+  const redirectBase = (() => {
+    const u = new URL(window.location.href);
+    u.search = '';
+    u.hash = '';
+    // Se este arquivo é /create.html, aponta para /index.html (redirect)
+    const path = u.pathname.replace(/\/create\.html?$/i, '/').replace(/\/[^/]*$/, '/');
+    return u.origin + path;
+  })();
+
+  /* ============ VALIDAÇÃO E NORMALIZAÇÃO ============ */
+  function normalize(raw) {
+    let s = (raw || '').trim();
+    if (!s) return { ok: false, error: 'Digite uma URL.' };
+
+    // Força https se não houver protocolo
+    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(s)) {
+      if (opts.forceHttps || true) s = 'https://' + s;
+      else s = 'http://' + s;
+    }
+
+    let u;
+    try {
+      u = new URL(s);
+    } catch (_) {
+      return { ok: false, error: 'URL inválida. Verifique o endereço.' };
+    }
+
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+      return { ok: false, error: 'Apenas URLs http:// ou https:// são permitidas.' };
+    }
+    if (!u.hostname || !u.hostname.includes('.')) {
+      return { ok: false, error: 'Domínio inválido.' };
+    }
+
+    // Forçar https se opção ativa
+    if (opts.forceHttps && u.protocol === 'http:') {
+      u.protocol = 'https:';
+    }
+
+    // Limpar www
+    if (opts.stripWww && u.hostname.startsWith('www.')) {
+      u.hostname = u.hostname.slice(4);
+    }
+
+    return { ok: true, url: u.href };
+  }
+
+  /* ============ GERAR ============ */
+  function generate() {
+    const { ok, url, error } = normalize($input.value);
+
+    if (!ok) {
+      $input.classList.add('invalid');
+      $error.textContent = error;
+      $error.classList.add('show');
+      return false;
+    }
+
+    $input.classList.remove('invalid');
+    $error.classList.remove('show');
+
+    const finalUrl = opts.encode
+      ? redirectBase + '?url=' + encodeURIComponent(url)
+      : redirectBase + '?url=' + url;
+
+    $output.textContent = finalUrl;
+    $testLink.href = finalUrl;
+    $result.classList.add('show');
+
+    return finalUrl;
+  }
+
+  /* ============ EVENTOS ============ */
+  $genBtn.addEventListener('click', generate);
+
+  $input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); generate(); }
+  });
+
+  $input.addEventListener('input', () => {
+    if ($input.classList.contains('invalid')) {
+      $input.classList.remove('invalid');
+      $error.classList.remove('show');
+    }
+  });
+
+  /* ============ COPY ============ */
+  async function copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_) {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (_) {}
+      document.body.removeChild(ta);
+      return true;
+    }
+  }
+
+  function showToast(msg) {
+    $toast.lastChild.textContent = ' ' + msg;
+    $toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => $toast.classList.remove('show'), 2200);
+  }
+
+  $copyBtn.addEventListener('click', async () => {
+    const text = $output.textContent;
+    if (!text) return;
+    await copyToClipboard(text);
+    $copyBtn.classList.add('copied');
+    $copyLbl.textContent = 'Copiado!';
+    showToast('Link copiado');
+    setTimeout(() => {
+      $copyBtn.classList.remove('copied');
+      $copyLbl.textContent = 'Copiar';
+    }, 1800);
+  });
+
+  /* ============ VER REDIRECT (mesma aba, sem target) ============ */
+  $openRedirect.addEventListener('click', () => {
+    const href = $testLink.href;
+    if (href && href !== '#' && href !== window.location.href) {
+      window.location.href = href;
+    }
+  });
+
+  /* ============ DEMO INICIAL ============ */
+  $input.value = 'https://exemplo.com';
+  $input.focus();
+  $input.select();
+})();
+</script>
+</body>
+</html>
